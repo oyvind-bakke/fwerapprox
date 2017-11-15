@@ -1,5 +1,4 @@
 scorestatcorr<-function(formula,xg,maxorder,family="gaussian",both=FALSE){
-  #
 	corrs<-corrmatrix<-NA
 	rownames(xg)<-colnames(xg)<-NULL
 	m<-dim(xg)[2]
