@@ -1,3 +1,4 @@
+#' Score test statistics in generalized linear models, with estimated correlations
 scorestatcorr<-function(formula,xg,maxorder,family="gaussian",both=FALSE){
 	corrs<-corrmatrix<-NA
 	rownames(xg)<-colnames(xg)<-NULL
