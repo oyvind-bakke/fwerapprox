@@ -30,7 +30,7 @@ y<-y+eff[xg[,1]+1] # effect for genotype 2 at marker 1
 summary(lm(y~sex+activity+agecategory))
 
 # compute test statistics and first and second order correlations
-library(fwerapprox)
+# library(fwerapprox)
 
 result<-scorestatcorr(y~sex+activity+agecategory,xg,2)
 result$statistic[1:10]
@@ -51,9 +51,9 @@ which(pvals<al2)
 
 # logistic model
 effl<-c(0,.57,2)
-y<-rbinom(n,1,1/(1+exp(-effl[xg[,1]+1])))
+yl<-rbinom(n,1,1/(1+exp(-effl[xg[,1]+1])))
 
-resultl<-scorestatcorr(y~1,xg,2,family=binomial)
+resultl<-scorestatcorr(yl~1,xg,2,family=binomial)
 resultl$statistic[1:10]
 resultl$corrs[[1]][1:10]
 pvalsl<-2*pnorm(-abs(resultl$statistic))

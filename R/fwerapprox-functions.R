@@ -1,4 +1,35 @@
-#' Score test statistics in generalized linear models, with estimated correlations
+#' Score test statistics in generalized linear models, with estimated
+#' correlations
+#'
+#' Computes score test statistics for testing whether a large number of
+#' coefficients (typically corresponding to genetic markers) in a GLM are zero
+#' in presence of a smaller number of covariates (typically environmental
+#' covariates) not included in the test, and provides estimates of correlations
+#' beween the test statistics
+#' @param formula Model \code{\link[stats]{formula}} for the null model, i.e.
+#'   including environmental covariates.
+#' @param xg Matrix of genetic markers (one column for each marker)
+#' @param maxorder Maximal order of which correlations of score test statistics
+#'   are estimated.
+#' @param family Family of GLM passed to \code{\link[stats]{glm}}
+#' @param both If \code{TRUE}, correlations are given both as a list and as a
+#'   matrix (see 'Value')
+#' @return A list containing the following components: \item{statistic}{A vector
+#'   of score test statistics} \item{corrs}{A list of vectors of correlations
+#'   of score test statistics. The
+#'   first component is a vector of first-order correlations, i.e. between
+#'   neighbouring markers, the second is a vector of second-order correlations,
+#'   i.e. between markers of distance 2, etc. The number of components is
+#'   \code{maxorder}. The list is generated if \code{maxorder} is greater than 0
+#'   and less than the number of columns of \code{xg} or if \code{both} is
+#'   \code{TRUE}.} \item{corrmatrix}{Estimated correlation matrix of the score
+#'   test statistics. The matrix is generated if \code{maxorder} is equal to the
+#'   number of columns of \code{xg} or if \code{both} is \code{TRUE}. In the
+#'   latter case, any correlations between markers of distance greater than
+#'   \code{maxorder} will be set to 0. \code{scorestatcorr} will attempt to load
+#'   the \code{Matrix} package and return \code{corrmatrix} as a
+#'   sparse banded matrix.}
+#'
 scorestatcorr<-function(formula,xg,maxorder,family="gaussian",both=FALSE){
 	corrs<-corrmatrix<-NA
 	rownames(xg)<-colnames(xg)<-NULL
@@ -45,6 +76,27 @@ scorestatcorr<-function(formula,xg,maxorder,family="gaussian",both=FALSE){
 	return(list("statistic"=t,"corrs"=corrs,"corrmatrix"=corrmatrix))
 }
 
+#' Second-order product-type approximation of multivariate normal probablity
+#'
+#' Computes a second-order Glaz--Johnson approximation to a multivariate
+#' standard normal probability with a given correlation matrix. Gives a familywise error rate level
+#' bound in multiple testing for a given local (per-hypothesis) significance level.
+#'
+#' @param alphaloc Local significance level (se above).
+#' @param corr A vector of first-order correlations (i.e., between \eqn{T_j} and \code{T_{j+1}}
+#'   for \eqn{j = 1}, \ldots, \eqn{m - 1}).
+#' @param tol Maximal order of which correlations of score test statistics
+#'   are estimated.
+#' @param tol If \eqn{||\rho| - 1| \leq} \code{tol} for a correlation \eqn{\rho}, then the
+#'   corresponding factor in the approximation is set to one.
+#' @return \eqn{P(|T_1| < c, \ldots, |T_m| <
+#' c)} is approximated for \eqn{(T_1, \ldots, T_m)} multivariate standard normal
+#' with first-order correlations given by \code{corr}, where \eqn{c} is
+#' \code{qnorm(1 - alphaloc/2)}. If \eqn{(T_1,\ldots T_m)} is a test statistic vector
+#' for \eqn{m} hypotheses, a local significance level of \code{alphaloc}, i.e. rejection of
+#' a null hypothesis if the \eqn{p}-value is less than \code{alphaloc}, will control
+#' familywise error rate at the \code{1 - gamma2(alphaloc, corr)} level.
+#'
 gamma2<-function(alphaloc,corr,tol=1e-7){ # fast
   const<-sqrt(2/pi)
   m<-length(corr) # one less than the number of markers
@@ -61,6 +113,34 @@ gamma2<-function(alphaloc,corr,tol=1e-7){ # fast
   b*prod
 }
 
+#' Order \eqn{k} product-type approximation of multivariate normal probablity
+#'
+#' Computes an order \eqn{k} Glaz--Johnson approximation to a multivariate
+#' standard normal probability with a given correlation matrix. Gives a familywise error rate level
+#' bound in multiple testing for a given local (per-hypothesis) significance level.
+#'
+#' The function is quite slow. For second-order approximation, it is better to use \code{\link{gamma2}}.
+#'
+#' @param k Order of the approximation.
+#' @param alphaloc Local significance level (se above).
+#' @param corr Either a list of correlations
+#'   in which the
+#'   first component is a vector of first-order correlations, the second is a vector
+#'   of second-order correlations,
+#'   up to a vector of \code{k} \eqn{- 1}-order correlations, or a correlation matrix.
+#'   Typically the \code{corrs} or \code{corrmatrix} component given by \code{\link{scorestatcorr}}.
+#' @param miwasteps The \code{steps} parameter used for \code{Miwa} (\code{\link[mvtnorm]{algorithms}})
+#'   in \code{\link[mvtnorm]{pmvnorm}}.
+#' @param genz If \code{TRUE}, the \code{GentzBretz} algorithm (\code{\link[mvtnorm]{algorithms}}) is used
+#'   for \code{\link[mvtnorm]{pmvnorm}}, otherwise the \code{Miwa} algorithm is used.
+#' @return \eqn{P(|T_1| < c, \ldots, |T_m| <
+#'   c)} is approximated for \eqn{(T_1, \ldots, T_m)} multivariate standard normal
+#'   with covariances (at least up to order \code{k-1}) given by \code{corr}, where \eqn{c} is
+#'   \code{qnorm(1 - alphaloc/2)}. If \eqn{(T_1,\ldots T_m)} is a test statistic vector
+#'   for \eqn{m} hypotheses, a local significance level of \code{alphaloc}, i.e. rejection of
+#'   a null hypothesis if the \eqn{p}-value is less than \code{alphaloc}, will control
+#'   familywise error rate at the \code{1 - gamma_k(alphaloc, corr)} level.
+#'
 gamma_k<-function(k,alphaloc,corr,miwasteps=4096,genz=FALSE){
 	require(mvtnorm,quietly=TRUE)
 	if(class(corr)=="list") m<-length(corr[[1]])+1 else m<-dim(corr)[1]
