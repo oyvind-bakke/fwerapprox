@@ -29,8 +29,21 @@
 #'   \code{maxorder} will be set to 0. \code{scorestatcorr} will attempt to load
 #'   the \code{Matrix} package and return \code{corrmatrix} as a
 #'   sparse banded matrix.}
+#' @examples
+#' summary(lm(y ~ sex + activity + agecategory))
+#' result <- scorestatcorr(y ~ sex + activity + agecategory, xg, 2) # normal model with three environmental covariates
+#' result$statistic[1:10]
+#' result$corrs[[1]][1:10]
+#' pvals <- 2*pnorm(-abs(result$statistic)) # p-values for two-sided test
+#' pvals[1:10]
 #'
-scorestatcorr<-function(formula,xg,maxorder,family="gaussian",both=FALSE){
+#' resultl <- scorestatcorr(yl ~ 1, xg, 2, family = binomial) # logistic model without environmental covariates
+#' resultl$statistic[1:10]
+#' resultl$corrs[[1]][1:10]
+#' pvalsl <- 2*pnorm(-abs(resultl$statistic))
+#' pvalsl[1:10]
+
+scorestatcorr<-function(formula,xg,maxorder,family=gaussian,both=FALSE){
 	corrs<-corrmatrix<-NA
 	rownames(xg)<-colnames(xg)<-NULL
 	m<-dim(xg)[2]
@@ -79,24 +92,37 @@ scorestatcorr<-function(formula,xg,maxorder,family="gaussian",both=FALSE){
 #' Second-order product-type approximation of multivariate normal probablity
 #'
 #' Computes a second-order Glaz--Johnson approximation to a multivariate
-#' standard normal probability with a given correlation matrix. Gives a familywise error rate level
-#' bound in multiple testing for a given local (per-hypothesis) significance level.
+#' standard normal probability with a given correlation matrix. Gives a
+#' familywise error rate level bound in multiple testing for a given local
+#' (per-hypothesis) significance level.
 #'
 #' @param alphaloc Local significance level (se above).
-#' @param corr A vector of first-order correlations (i.e., between \eqn{T_j} and \code{T_{j+1}}
-#'   for \eqn{j = 1}, \ldots, \eqn{m - 1}).
-#' @param tol Maximal order of which correlations of score test statistics
-#'   are estimated.
-#' @param tol If \eqn{||\rho| - 1| \leq} \code{tol} for a correlation \eqn{\rho}, then the
-#'   corresponding factor in the approximation is set to one.
-#' @return \eqn{P(|T_1| < c, \ldots, |T_m| <
-#' c)} is approximated for \eqn{(T_1, \ldots, T_m)} multivariate standard normal
-#' with first-order correlations given by \code{corr}, where \eqn{c} is
-#' \code{qnorm(1 - alphaloc/2)}. If \eqn{(T_1,\ldots T_m)} is a test statistic vector
-#' for \eqn{m} hypotheses, a local significance level of \code{alphaloc}, i.e. rejection of
-#' a null hypothesis if the \eqn{p}-value is less than \code{alphaloc}, will control
-#' familywise error rate at the \code{1 - gamma2(alphaloc, corr)} level.
+#' @param corr A vector of first-order correlations (i.e., between \eqn{T_j} and
+#'   \code{T_{j+1}} for \eqn{j = 1}, \ldots, \eqn{m - 1}).
+#' @param tol Maximal order of which correlations of score test statistics are
+#'   estimated.
+#' @param tol If \eqn{||\rho| - 1| \leq} \code{tol} for a correlation
+#'   \eqn{\rho}, then the corresponding factor in the approximation is set to
+#'   one.
+#' @return \eqn{P(|T_1| < c, \ldots, |T_m| < c)} is approximated for \eqn{(T_1,
+#'   \ldots, T_m)} multivariate standard normal with first-order correlations
+#'   given by \code{corr}, where \eqn{c} is \code{qnorm(1 - alphaloc/2)}. If
+#'   \eqn{(T_1,\ldots T_m)} is a test statistic vector for \eqn{m} hypotheses, a
+#'   local significance level of \code{alphaloc}, i.e. rejection of a null
+#'   hypothesis if the \eqn{p}-value is less than \code{alphaloc}, will control
+#'   familywise error rate at the \code{1 - gamma2(alphaloc, corr)} level.
+#' @examples
+#' result <- scorestatcorr(y ~ sex + activity + agecategory, xg, 2) # normal model with three environmental covariates
+#' pvals <- 2*pnorm(-abs(result$statistic))
+#' # find alpha_loc controlling FWER at 0.05 level given by order 2 approximation
+#' al <- uniroot(function(a) gamma2(a, result$corrs[[1]]) - .95, c(1e-5, 5e-4), tol = 1e-14)$root
+#' which(pvals<al)
+#' 0.05/2000 # Bonferroni
+#' 1 - 0.95^(1/2000) # Sidak
+#' al # order 2 FWER approximation
 #'
+#' resultl <- scorestatcorr(yl ~ 1, xg, 2, family = binomial) # logistic model without environmental covariates
+#' all <- uniroot(function(a) gamma2(a, result$corrs[[1]]) - .95, c(1e-5, 5e-4), tol = 1e-14)$root
 gamma2<-function(alphaloc,corr,tol=1e-7){ # fast
   const<-sqrt(2/pi)
   m<-length(corr) # one less than the number of markers
@@ -140,7 +166,14 @@ gamma2<-function(alphaloc,corr,tol=1e-7){ # fast
 #'   for \eqn{m} hypotheses, a local significance level of \code{alphaloc}, i.e. rejection of
 #'   a null hypothesis if the \eqn{p}-value is less than \code{alphaloc}, will control
 #'   familywise error rate at the \code{1 - gamma_k(alphaloc, corr)} level.
-#'
+#' @examples
+#' result <- scorestatcorr(y ~ sex + activity + agecategory, xg, 2) # normal model with three environmental covariates
+#' al <- uniroot(function(a) gamma2(a, result$corrs[[1]]) - .95, c(1e-5, 5e-4), tol = 1e-14)$root
+#' al3 <- uniroot(function(a) gamma_k(3, a, result$corrs) - .95, c(1e-5, 5e-4), tol = 1e-14)$root
+#' 0.05/2000 # Bonferroni
+#' 1 - 0.95^(1/2000) # Sidak
+#' al # order 2 FWER approximation
+#' al3 # order 3 FWER approximation
 gamma_k<-function(k,alphaloc,corr,miwasteps=4096,genz=FALSE){
 	require(mvtnorm,quietly=TRUE)
 	if(class(corr)=="list") m<-length(corr[[1]])+1 else m<-dim(corr)[1]

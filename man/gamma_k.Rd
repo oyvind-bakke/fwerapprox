@@ -41,3 +41,12 @@ bound in multiple testing for a given local (per-hypothesis) significance level.
 \details{
 The function is quite slow. For second-order approximation, it is better to use \code{\link{gamma2}}.
 }
+\examples{
+result <- scorestatcorr(y ~ sex + activity + agecategory, xg, 2) # normal model with three environmental covariates
+al <- uniroot(function(a) gamma2(a, result$corrs[[1]]) - .95, c(1e-5, 5e-4), tol = 1e-14)$root
+al3 <- uniroot(function(a) gamma_k(3, a, result$corrs) - .95, c(1e-5, 5e-4), tol = 1e-14)$root
+0.05/2000 # Bonferroni
+1 - 0.95^(1/2000) # Sidak
+al # order 2 FWER approximation
+al3 # order 3 FWER approximation
+}

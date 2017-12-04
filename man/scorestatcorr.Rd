@@ -5,7 +5,7 @@
 \title{Score test statistics in generalized linear models, with estimated
 correlations}
 \usage{
-scorestatcorr(formula, xg, maxorder, family = "gaussian", both = FALSE)
+scorestatcorr(formula, xg, maxorder, family = gaussian, both = FALSE)
 }
 \arguments{
 \item{formula}{Model \code{\link[stats]{formula}} for the null model, i.e.
@@ -44,4 +44,18 @@ coefficients (typically corresponding to genetic markers) in a GLM are zero
 in presence of a smaller number of covariates (typically environmental
 covariates) not included in the test, and provides estimates of correlations
 beween the test statistics
+}
+\examples{
+summary(lm(y ~ sex + activity + agecategory))
+result <- scorestatcorr(y ~ sex + activity + agecategory, xg, 2) # normal model with three environmental covariates
+result$statistic[1:10]
+result$corrs[[1]][1:10]
+pvals <- 2*pnorm(-abs(result$statistic)) # p-values for two-sided test
+pvals[1:10]
+
+resultl <- scorestatcorr(yl ~ 1, xg, 2, family = binomial) # logistic model without environmental covariates
+resultl$statistic[1:10]
+resultl$corrs[[1]][1:10]
+pvalsl <- 2*pnorm(-abs(resultl$statistic))
+pvalsl[1:10]
 }

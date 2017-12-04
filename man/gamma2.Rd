@@ -9,26 +9,41 @@ gamma2(alphaloc, corr, tol = 1e-07)
 \arguments{
 \item{alphaloc}{Local significance level (se above).}
 
-\item{corr}{A vector of first-order correlations (i.e., between \eqn{T_j} and \code{T_{j+1}}
-for \eqn{j = 1}, \ldots, \eqn{m - 1}).}
+\item{corr}{A vector of first-order correlations (i.e., between \eqn{T_j} and
+\code{T_{j+1}} for \eqn{j = 1}, \ldots, \eqn{m - 1}).}
 
-\item{tol}{Maximal order of which correlations of score test statistics
-are estimated.}
+\item{tol}{Maximal order of which correlations of score test statistics are
+estimated.}
 
-\item{tol}{If \eqn{||\rho| - 1| \leq} \code{tol} for a correlation \eqn{\rho}, then the
-corresponding factor in the approximation is set to one.}
+\item{tol}{If \eqn{||\rho| - 1| \leq} \code{tol} for a correlation
+\eqn{\rho}, then the corresponding factor in the approximation is set to
+one.}
 }
 \value{
-\eqn{P(|T_1| < c, \ldots, |T_m| <
-c)} is approximated for \eqn{(T_1, \ldots, T_m)} multivariate standard normal
-with first-order correlations given by \code{corr}, where \eqn{c} is
-\code{qnorm(1 - alphaloc/2)}. If \eqn{(T_1,\ldots T_m)} is a test statistic vector
-for \eqn{m} hypotheses, a local significance level of \code{alphaloc}, i.e. rejection of
-a null hypothesis if the \eqn{p}-value is less than \code{alphaloc}, will control
-familywise error rate at the \code{1 - gamma2(alphaloc, corr)} level.
+\eqn{P(|T_1| < c, \ldots, |T_m| < c)} is approximated for \eqn{(T_1,
+  \ldots, T_m)} multivariate standard normal with first-order correlations
+  given by \code{corr}, where \eqn{c} is \code{qnorm(1 - alphaloc/2)}. If
+  \eqn{(T_1,\ldots T_m)} is a test statistic vector for \eqn{m} hypotheses, a
+  local significance level of \code{alphaloc}, i.e. rejection of a null
+  hypothesis if the \eqn{p}-value is less than \code{alphaloc}, will control
+  familywise error rate at the \code{1 - gamma2(alphaloc, corr)} level.
 }
 \description{
 Computes a second-order Glaz--Johnson approximation to a multivariate
-standard normal probability with a given correlation matrix. Gives a familywise error rate level
-bound in multiple testing for a given local (per-hypothesis) significance level.
+standard normal probability with a given correlation matrix. Gives a
+familywise error rate level bound in multiple testing for a given local
+(per-hypothesis) significance level.
+}
+\examples{
+result <- scorestatcorr(y ~ sex + activity + agecategory, xg, 2) # normal model with three environmental covariates
+pvals <- 2*pnorm(-abs(result$statistic))
+# find alpha_loc controlling FWER at 0.05 level given by order 2 approximation
+al <- uniroot(function(a) gamma2(a, result$corrs[[1]]) - .95, c(1e-5, 5e-4), tol = 1e-14)$root
+which(pvals<al)
+0.05/2000 # Bonferroni
+1 - 0.95^(1/2000) # Sidak
+al # order 2 FWER approximation
+
+resultl <- scorestatcorr(yl ~ 1, xg, 2, family = binomial) # logistic model without environmental covariates
+all <- uniroot(function(a) gamma2(a, result$corrs[[1]]) - .95, c(1e-5, 5e-4), tol = 1e-14)$root
 }
