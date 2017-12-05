@@ -23,20 +23,19 @@ matrix (see 'Value').}
 }
 \value{
 A list containing the following components: \item{statistic}{A vector
-  of score test statistics} \item{corrs}{A list of vectors of correlations
-  of score test statistics. The
-  first component is a vector of first-order correlations, i.e. between
-  neighbouring markers, the second is a vector of second-order correlations,
-  i.e. between markers of distance 2, etc. The number of components is
-  \code{maxorder}. The list is generated if \code{maxorder} is greater than 0
-  and less than the number of columns of \code{xg} or if \code{both} is
-  \code{TRUE}.} \item{corrmatrix}{Estimated correlation matrix of the score
-  test statistics. The matrix is generated if \code{maxorder} is equal to the
-  number of columns of \code{xg} or if \code{both} is \code{TRUE}. In the
-  latter case, any correlations between markers of distance greater than
-  \code{maxorder} will be set to 0. \code{scorestatcorr} will attempt to load
-  the \code{Matrix} package and return \code{corrmatrix} as a
-  sparse banded matrix.}.
+  of score test statistics} \item{corrs}{A list of vectors of correlations of
+  score test statistics. The first component is a vector of first-order
+  correlations, i.e. between neighbouring markers, the second is a vector of
+  second-order correlations, i.e. between markers of distance 2, etc. The
+  number of components is \code{maxorder}. The list is generated if
+  \code{maxorder} is greater than 0 and less than the number of columns of
+  \code{xg} or if \code{both} is \code{TRUE}.} \item{corrmatrix}{Estimated
+  correlation matrix of the score test statistics. The matrix is generated if
+  \code{maxorder} is equal to the number of columns of \code{xg} or if
+  \code{both} is \code{TRUE}. In the latter case, any correlations between
+  markers of distance greater than \code{maxorder} will be set to 0.
+  \code{scorestatcorr} will attempt to load the \code{Matrix} package and
+  return \code{corrmatrix} as a sparse banded matrix.}.
 }
 \description{
 Computes score test statistics for testing whether a large number of
