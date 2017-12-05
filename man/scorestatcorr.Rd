@@ -11,15 +11,15 @@ scorestatcorr(formula, xg, maxorder, family = gaussian, both = FALSE)
 \item{formula}{Model \code{\link[stats]{formula}} for the null model, i.e.
 including environmental covariates.}
 
-\item{xg}{Matrix of genetic markers (one column for each marker)}
+\item{xg}{Matrix of genetic markers (one column for each marker).}
 
 \item{maxorder}{Maximal order of which correlations of score test statistics
 are estimated.}
 
-\item{family}{Family of GLM passed to \code{\link[stats]{glm}}}
+\item{family}{Family of GLM passed to \code{\link[stats]{glm}}.}
 
 \item{both}{If \code{TRUE}, correlations are given both as a list and as a
-matrix (see 'Value')}
+matrix (see 'Value').}
 }
 \value{
 A list containing the following components: \item{statistic}{A vector
@@ -36,7 +36,7 @@ A list containing the following components: \item{statistic}{A vector
   latter case, any correlations between markers of distance greater than
   \code{maxorder} will be set to 0. \code{scorestatcorr} will attempt to load
   the \code{Matrix} package and return \code{corrmatrix} as a
-  sparse banded matrix.}
+  sparse banded matrix.}.
 }
 \description{
 Computes score test statistics for testing whether a large number of

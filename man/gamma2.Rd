@@ -37,12 +37,12 @@ result <- scorestatcorr(y_normal ~ sex + activity + agecategory, xg, 2)
 pvals <- 2*pnorm(-abs(result$statistic))
 # Find alpha_loc controlling FWER at 0.05 level given by order 2 approximation:
 al <- uniroot(function(a) gamma2(a, result$corrs[[1]]) - .95, c(1e-5, 5e-4), tol = 1e-14)$root
-which(pvals<al)
+which(pvals < al)
 0.05/2000 # Bonferroni
 1 - 0.95^(1/2000) # Sidak
 al # order 2 FWER approximation
 
 # Logistic model without environmental covariates:
 result_l <- scorestatcorr(y_logistic ~ 1, xg, 2, family = binomial)
-al_l <- uniroot(function(a) gamma2(a, result$corrs[[1]]) - .95, c(1e-5, 5e-4), tol = 1e-14)$root
+al_l <- uniroot(function(a) gamma2(a, result_l$corrs[[1]]) - .95, c(1e-5, 5e-4), tol = 1e-14)$root
 }

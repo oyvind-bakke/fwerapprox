@@ -8,12 +8,12 @@
 #' beween the test statistics
 #' @param formula Model \code{\link[stats]{formula}} for the null model, i.e.
 #'   including environmental covariates.
-#' @param xg Matrix of genetic markers (one column for each marker)
+#' @param xg Matrix of genetic markers (one column for each marker).
 #' @param maxorder Maximal order of which correlations of score test statistics
 #'   are estimated.
-#' @param family Family of GLM passed to \code{\link[stats]{glm}}
+#' @param family Family of GLM passed to \code{\link[stats]{glm}}.
 #' @param both If \code{TRUE}, correlations are given both as a list and as a
-#'   matrix (see 'Value')
+#'   matrix (see 'Value').
 #' @return A list containing the following components: \item{statistic}{A vector
 #'   of score test statistics} \item{corrs}{A list of vectors of correlations
 #'   of score test statistics. The
@@ -28,7 +28,7 @@
 #'   latter case, any correlations between markers of distance greater than
 #'   \code{maxorder} will be set to 0. \code{scorestatcorr} will attempt to load
 #'   the \code{Matrix} package and return \code{corrmatrix} as a
-#'   sparse banded matrix.}
+#'   sparse banded matrix.}.
 #' @examples
 #' # Normal model with three environmental covariates:
 #' result <- scorestatcorr(y_normal ~ sex + activity + agecategory, xg, 2)
@@ -116,14 +116,14 @@ scorestatcorr<-function(formula,xg,maxorder,family=gaussian,both=FALSE){
 #' pvals <- 2*pnorm(-abs(result$statistic))
 #' # Find alpha_loc controlling FWER at 0.05 level given by order 2 approximation:
 #' al <- uniroot(function(a) gamma2(a, result$corrs[[1]]) - .95, c(1e-5, 5e-4), tol = 1e-14)$root
-#' which(pvals<al)
+#' which(pvals < al)
 #' 0.05/2000 # Bonferroni
 #' 1 - 0.95^(1/2000) # Sidak
 #' al # order 2 FWER approximation
 #'
 #' # Logistic model without environmental covariates:
 #' result_l <- scorestatcorr(y_logistic ~ 1, xg, 2, family = binomial)
-#' al_l <- uniroot(function(a) gamma2(a, result$corrs[[1]]) - .95, c(1e-5, 5e-4), tol = 1e-14)$root
+#' al_l <- uniroot(function(a) gamma2(a, result_l$corrs[[1]]) - .95, c(1e-5, 5e-4), tol = 1e-14)$root
 #' @export
 gamma2<-function(alphaloc,corr,tol=1e-7){ # fast
   const<-sqrt(2/pi)

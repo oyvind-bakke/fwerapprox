@@ -12,3 +12,15 @@ To install:
 library(devtools)
 install_github("oyvind-bakke/fwerapprox")
 ```
+
+To load:
+
+```r
+library(fwerapprox)
+```
+
+Basic information:
+
+```r
+package?fwerapprox
+```
