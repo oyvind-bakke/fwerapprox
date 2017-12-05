@@ -3,7 +3,7 @@
 \docType{data}
 \name{activity}
 \alias{activity}
-\title{Activity data}
+\title{Data: Activity}
 \format{An object of class \code{numeric} of length 1000.}
 \usage{
 activity

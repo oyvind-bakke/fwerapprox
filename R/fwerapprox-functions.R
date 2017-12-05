@@ -30,19 +30,20 @@
 #'   the \code{Matrix} package and return \code{corrmatrix} as a
 #'   sparse banded matrix.}
 #' @examples
-#' summary(lm(y ~ sex + activity + agecategory))
-#' result <- scorestatcorr(y ~ sex + activity + agecategory, xg, 2) # normal model with three environmental covariates
+#' # Normal model with three environmental covariates:
+#' result <- scorestatcorr(y_normal ~ sex + activity + agecategory, xg, 2)
 #' result$statistic[1:10]
 #' result$corrs[[1]][1:10]
 #' pvals <- 2*pnorm(-abs(result$statistic)) # p-values for two-sided test
 #' pvals[1:10]
 #'
-#' resultl <- scorestatcorr(yl ~ 1, xg, 2, family = binomial) # logistic model without environmental covariates
+#' # Logistic model without environmental covariates:
+#' resultl <- scorestatcorr(y_logistic ~ 1, xg, 2, family = binomial)
 #' resultl$statistic[1:10]
 #' resultl$corrs[[1]][1:10]
 #' pvalsl <- 2*pnorm(-abs(resultl$statistic))
 #' pvalsl[1:10]
-
+#' @export
 scorestatcorr<-function(formula,xg,maxorder,family=gaussian,both=FALSE){
 	corrs<-corrmatrix<-NA
 	rownames(xg)<-colnames(xg)<-NULL
@@ -76,9 +77,9 @@ scorestatcorr<-function(formula,xg,maxorder,family=gaussian,both=FALSE){
 							colSums(veg[,1:(m-i),drop=FALSE]*veeinvveg[,(i+1):m,drop=FALSE]))/
 						(sd[1:(m-i)]*sd[(i+1):m])
 			if(both)
-				if(require(Matrix,quietly=TRUE))
+				if(requireNamespace("Matrix",quietly=TRUE))
 					corrmatrix<-
-						bandSparse(m,k=0:maxorder,diagonals=c(list(rep(1,m)),corrs),symmetric=TRUE) else{
+						Matrix::bandSparse(m,k=0:maxorder,diagonals=c(list(rep(1,m)),corrs),symmetric=TRUE) else{
 				#else
 					corrmatrix<-diag(m)
 					for(i in 1:maxorder) for(j in 1:(m-i))
@@ -99,9 +100,7 @@ scorestatcorr<-function(formula,xg,maxorder,family=gaussian,both=FALSE){
 #' @param alphaloc Local significance level (se above).
 #' @param corr A vector of first-order correlations (i.e., between \eqn{T_j} and
 #'   \code{T_{j+1}} for \eqn{j = 1}, \ldots, \eqn{m - 1}).
-#' @param tol Maximal order of which correlations of score test statistics are
-#'   estimated.
-#' @param tol If \eqn{||\rho| - 1| \leq} \code{tol} for a correlation
+#' @param tol If \eqn{||\rho| - 1| \le} \code{tol} for a correlation
 #'   \eqn{\rho}, then the corresponding factor in the approximation is set to
 #'   one.
 #' @return \eqn{P(|T_1| < c, \ldots, |T_m| < c)} is approximated for \eqn{(T_1,
@@ -112,17 +111,20 @@ scorestatcorr<-function(formula,xg,maxorder,family=gaussian,both=FALSE){
 #'   hypothesis if the \eqn{p}-value is less than \code{alphaloc}, will control
 #'   familywise error rate at the \code{1 - gamma2(alphaloc, corr)} level.
 #' @examples
-#' result <- scorestatcorr(y ~ sex + activity + agecategory, xg, 2) # normal model with three environmental covariates
+#' # Normal model with three environmental covariates:
+#' result <- scorestatcorr(y_normal ~ sex + activity + agecategory, xg, 2)
 #' pvals <- 2*pnorm(-abs(result$statistic))
-#' # find alpha_loc controlling FWER at 0.05 level given by order 2 approximation
+#' # Find alpha_loc controlling FWER at 0.05 level given by order 2 approximation:
 #' al <- uniroot(function(a) gamma2(a, result$corrs[[1]]) - .95, c(1e-5, 5e-4), tol = 1e-14)$root
 #' which(pvals<al)
 #' 0.05/2000 # Bonferroni
 #' 1 - 0.95^(1/2000) # Sidak
 #' al # order 2 FWER approximation
 #'
-#' resultl <- scorestatcorr(yl ~ 1, xg, 2, family = binomial) # logistic model without environmental covariates
-#' all <- uniroot(function(a) gamma2(a, result$corrs[[1]]) - .95, c(1e-5, 5e-4), tol = 1e-14)$root
+#' # Logistic model without environmental covariates:
+#' result_l <- scorestatcorr(y_logistic ~ 1, xg, 2, family = binomial)
+#' al_l <- uniroot(function(a) gamma2(a, result$corrs[[1]]) - .95, c(1e-5, 5e-4), tol = 1e-14)$root
+#' @export
 gamma2<-function(alphaloc,corr,tol=1e-7){ # fast
   const<-sqrt(2/pi)
   m<-length(corr) # one less than the number of markers
@@ -167,15 +169,17 @@ gamma2<-function(alphaloc,corr,tol=1e-7){ # fast
 #'   a null hypothesis if the \eqn{p}-value is less than \code{alphaloc}, will control
 #'   familywise error rate at the \code{1 - gamma_k(alphaloc, corr)} level.
 #' @examples
-#' result <- scorestatcorr(y ~ sex + activity + agecategory, xg, 2) # normal model with three environmental covariates
+#' # Normal model with three environmental covariates:
+#' result <- scorestatcorr(y_normal ~ sex + activity + agecategory, xg[,1:200], 2)
 #' al <- uniroot(function(a) gamma2(a, result$corrs[[1]]) - .95, c(1e-5, 5e-4), tol = 1e-14)$root
 #' al3 <- uniroot(function(a) gamma_k(3, a, result$corrs) - .95, c(1e-5, 5e-4), tol = 1e-14)$root
 #' 0.05/2000 # Bonferroni
 #' 1 - 0.95^(1/2000) # Sidak
 #' al # order 2 FWER approximation
 #' al3 # order 3 FWER approximation
+#' @export
 gamma_k<-function(k,alphaloc,corr,miwasteps=4096,genz=FALSE){
-	require(mvtnorm,quietly=TRUE)
+  if(!requireNamespace("mvtnorm",quietly=TRUE)) stop("Please install mvtnorm package",call=FALSE)
 	if(class(corr)=="list") m<-length(corr[[1]])+1 else m<-dim(corr)[1]
 	b<-1-alphaloc
 	const<-sqrt(2/pi)
@@ -198,13 +202,13 @@ gamma_k<-function(k,alphaloc,corr,miwasteps=4096,genz=FALSE){
 			sing<-TRUE
 		} else {
 			if(genz){
-				temp<-pmvnorm(rep(-lim,k),rep(lim,k),sigma=corrmat)[[1]]
+				temp<-mvtnorm::pmvnorm(rep(-lim,k),rep(lim,k),sigma=corrmat)[[1]]
 			} else
-				temp<-pmvnorm(rep(-lim,k),rep(lim,k),sigma=corrmat,alg=Miwa(miwasteps))[[1]]
+				temp<-mvtnorm::pmvnorm(rep(-lim,k),rep(lim,k),sigma=corrmat,alg=mvtnorm::Miwa(miwasteps))[[1]]
 		}
 		if(temp>1) temp<-1
 		prod<-prod*temp
-		if(prod-1>1e-7)cat("Numerator ≥ 1",i,temp,prod,"\n")
+		if(prod-1>1e-7)cat("Numerator >= 1",i,temp,prod,"\n")
 		if(i>k){
 			if(sing){
 				temp<-1
@@ -216,14 +220,14 @@ gamma_k<-function(k,alphaloc,corr,miwasteps=4096,genz=FALSE){
 				} else {
 					corrmat<-corrmat[1:(k-1),1:(k-1)]
 					if(genz){
-						temp<-pmvnorm(rep(-lim,k-1),rep(lim,k-1),sigma=corrmat)[[1]]
+						temp<-mvtnorm::pmvnorm(rep(-lim,k-1),rep(lim,k-1),sigma=corrmat)[[1]]
 					} else
-						temp<-pmvnorm(rep(-lim,k-1),rep(lim,k-1),sigma=corrmat,alg=Miwa(miwasteps))[[1]]
+						temp<-mvtnorm::pmvnorm(rep(-lim,k-1),rep(lim,k-1),sigma=corrmat,alg=mvtnorm::Miwa(miwasteps))[[1]]
 				}
 			}
 			if(temp>1) temp<-1
 			prod<-prod/temp
-			if(prod-1>1e-7)cat("Warning: Denominator ≥ 1",i,temp,prod,"\n")
+			if(prod-1>1e-7)cat("Warning: Denominator >= 1",i,temp,prod,"\n")
 		}
 	}
   prod

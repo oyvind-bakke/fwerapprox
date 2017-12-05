@@ -6,6 +6,9 @@ set.seed(1)
 sex<-factor(rbinom(n,1,.5)+1)
 activity<-sapply(floor(rnorm(n,10,5)),function(x)max(x,0))
 agecategory<-factor(sample(1:5,n,replace=TRUE))
+devtools::use_data(sex,overwrite=TRUE)
+devtools::use_data(activity,overwrite=TRUE)
+devtools::use_data(agecategory,overwrite=TRUE)
 
 # effects of covariates
 b_sex<-c(0,.1)
@@ -19,13 +22,15 @@ pcond<-matrix(c(0.7405,0.0685,0.001,0.069,0.111,0,0.0005,0.0005,0.009),nrow=3,by
 xg<-matrix(0,nrow=n,ncol=m)
 xg[,1]<-c(rep(0,.81*n),rep(1,.18*n),rep(2,.01*n))
 for(j in 2:m) xg[,j]<-sapply(1:n,function(i)sample(0:2,1,prob=pcond[xg[i,j-1]+1,1:3]))
+devtools::use_data(xg,overwrite=TRUE)
 
 # responses
 y<-sapply(1:n,function(i)rnorm(1,50+b_sex[sex[i]]+b_act*activity[i]+b_age[agecategory[i]]))
 # effect at marker 1:
 eff<-c(0,.43,.83)
 # y<-y+sapply(1:n,function(i)if(xg[i,1]==2) .1 else 0) # effect for genotype 2 at marker 1
-y<-y+eff[xg[,1]+1] # effect for genotype 2 at marker 1
+y_normal<-y+eff[xg[,1]+1] # effect for genotype 2 at marker 1
+devtools::use_data(y_normal,overwrite=TRUE)
 
 summary(lm(y~sex+activity+agecategory))
 
@@ -51,7 +56,8 @@ which(pvals<al2)
 
 # logistic model
 effl<-c(0,.57,2)
-yl<-rbinom(n,1,1/(1+exp(-effl[xg[,1]+1])))
+y_logistic<-rbinom(n,1,1/(1+exp(-effl[xg[,1]+1])))
+devtools::use_data(y_logistic,overwrite=TRUE)
 
 resultl<-scorestatcorr(yl~1,xg,2,family=binomial)
 resultl$statistic[1:10]

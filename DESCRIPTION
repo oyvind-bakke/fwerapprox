@@ -12,7 +12,13 @@ Description: (1) Computes score test statistics for testing whether a large numb
     asymptotic multivariate normal distribution of the test statistics. See Halle et al.,
     "Efficient and powerful familywise error control in genome-wide association studies
     using generalised linear models".
-License: What license is it under?
+Depends: R (>= 2.10)
+Imports:
+    stats
+Suggests:
+    Matrix,
+    mvtnorm
+License: GPL-3
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 6.0.1

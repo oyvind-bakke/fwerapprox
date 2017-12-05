@@ -3,7 +3,7 @@
 \docType{data}
 \name{xg}
 \alias{xg}
-\title{Genetic markers}
+\title{Data: Genetic markers}
 \format{An object of class \code{matrix} with 1000 rows and 2000 columns.}
 \usage{
 xg

@@ -12,10 +12,7 @@ gamma2(alphaloc, corr, tol = 1e-07)
 \item{corr}{A vector of first-order correlations (i.e., between \eqn{T_j} and
 \code{T_{j+1}} for \eqn{j = 1}, \ldots, \eqn{m - 1}).}
 
-\item{tol}{Maximal order of which correlations of score test statistics are
-estimated.}
-
-\item{tol}{If \eqn{||\rho| - 1| \leq} \code{tol} for a correlation
+\item{tol}{If \eqn{||\rho| - 1| \le} \code{tol} for a correlation
 \eqn{\rho}, then the corresponding factor in the approximation is set to
 one.}
 }
@@ -35,15 +32,17 @@ familywise error rate level bound in multiple testing for a given local
 (per-hypothesis) significance level.
 }
 \examples{
-result <- scorestatcorr(y ~ sex + activity + agecategory, xg, 2) # normal model with three environmental covariates
+# Normal model with three environmental covariates:
+result <- scorestatcorr(y_normal ~ sex + activity + agecategory, xg, 2)
 pvals <- 2*pnorm(-abs(result$statistic))
-# find alpha_loc controlling FWER at 0.05 level given by order 2 approximation
+# Find alpha_loc controlling FWER at 0.05 level given by order 2 approximation:
 al <- uniroot(function(a) gamma2(a, result$corrs[[1]]) - .95, c(1e-5, 5e-4), tol = 1e-14)$root
 which(pvals<al)
 0.05/2000 # Bonferroni
 1 - 0.95^(1/2000) # Sidak
 al # order 2 FWER approximation
 
-resultl <- scorestatcorr(yl ~ 1, xg, 2, family = binomial) # logistic model without environmental covariates
-all <- uniroot(function(a) gamma2(a, result$corrs[[1]]) - .95, c(1e-5, 5e-4), tol = 1e-14)$root
+# Logistic model without environmental covariates:
+result_l <- scorestatcorr(y_logistic ~ 1, xg, 2, family = binomial)
+al_l <- uniroot(function(a) gamma2(a, result$corrs[[1]]) - .95, c(1e-5, 5e-4), tol = 1e-14)$root
 }

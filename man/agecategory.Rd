@@ -3,7 +3,7 @@
 \docType{data}
 \name{agecategory}
 \alias{agecategory}
-\title{Age category}
+\title{Data: Age category}
 \format{An object of class \code{factor} of length 1000.}
 \usage{
 agecategory

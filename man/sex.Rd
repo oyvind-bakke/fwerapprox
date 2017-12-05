@@ -3,7 +3,7 @@
 \docType{data}
 \name{sex}
 \alias{sex}
-\title{Sex}
+\title{Data: Sex}
 \format{An object of class \code{factor} of length 1000.}
 \usage{
 sex

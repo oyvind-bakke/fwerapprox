@@ -46,14 +46,15 @@ covariates) not included in the test, and provides estimates of correlations
 beween the test statistics
 }
 \examples{
-summary(lm(y ~ sex + activity + agecategory))
-result <- scorestatcorr(y ~ sex + activity + agecategory, xg, 2) # normal model with three environmental covariates
+# Normal model with three environmental covariates:
+result <- scorestatcorr(y_normal ~ sex + activity + agecategory, xg, 2)
 result$statistic[1:10]
 result$corrs[[1]][1:10]
 pvals <- 2*pnorm(-abs(result$statistic)) # p-values for two-sided test
 pvals[1:10]
 
-resultl <- scorestatcorr(yl ~ 1, xg, 2, family = binomial) # logistic model without environmental covariates
+# Logistic model without environmental covariates:
+resultl <- scorestatcorr(y_logistic ~ 1, xg, 2, family = binomial)
 resultl$statistic[1:10]
 resultl$corrs[[1]][1:10]
 pvalsl <- 2*pnorm(-abs(resultl$statistic))
