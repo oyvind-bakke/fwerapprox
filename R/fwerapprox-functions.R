@@ -5,7 +5,7 @@
 #' coefficients (typically corresponding to genetic markers) in a GLM with canonical
 #' link is zero
 #' in presence of a smaller number of covariates (typically environmental
-#' covariates) not included in the test, and provides estimates of correlations
+#' covariates), and provides estimates of correlations
 #' between the test statistics.
 #' @param formula Model \code{\link[stats]{formula}} for the null model, i.e.
 #'   including environmental covariates.

@@ -25,7 +25,7 @@ Use \code{library(help = "fwerapprox")} to get a list of functions and data sets
 coefficients (typically corresponding to genetic markers) in a GLM with canonical
 link is zero
 in presence of a smaller number of covariates (typically environmental
-covariates) not included in the test, and provides estimates of correlations
+covariates), and provides estimates of correlations
 between the test statistics.}
 
 \item{\code{gamma2}}{Computes a second-order Glaz--Johnson approximation to a multivariate
