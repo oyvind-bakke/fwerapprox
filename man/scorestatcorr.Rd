@@ -38,11 +38,12 @@ A list containing the following components: \item{statistic}{A vector
   return \code{corrmatrix} as a sparse banded matrix.}.
 }
 \description{
-Computes score test statistics for testing whether a large number of
-coefficients (typically corresponding to genetic markers) in a GLM are zero
+Computes score test statistics for testing whether each of a large number of
+coefficients (typically corresponding to genetic markers) in a GLM with canonical
+link is zero
 in presence of a smaller number of covariates (typically environmental
 covariates) not included in the test, and provides estimates of correlations
-beween the test statistics
+between the test statistics.
 }
 \examples{
 # Normal model with three environmental covariates:

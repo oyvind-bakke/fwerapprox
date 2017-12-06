@@ -7,8 +7,8 @@ Maintainer: Øyvind Bakke <oyvind.bakke@ntnu.no>
 Description: (1) Computes score test statistics for testing whether each of a large
     number of
     coefficients (typically corresponding to genetic markers) in a GLM is zero in
-    presence of a smaller number of covariates (typically environmental covariat) not
-    included in the test, and provides estimates of correlations beween the test
+    presence of a smaller number of covariates (typically environmental covariates) not
+    included in the test, and provides estimates of correlations between the test
     statistics, and (2) computes Glaz–Johnson-type intersection approximations of the
     asymptotic multivariate normal distribution of the test statistics, which can be
     used for FWER control. See Halle et al.,

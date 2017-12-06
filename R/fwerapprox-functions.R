@@ -1,11 +1,12 @@
 #' Score test statistics in generalized linear models, with estimated
 #' correlations
 #'
-#' Computes score test statistics for testing whether a large number of
-#' coefficients (typically corresponding to genetic markers) in a GLM are zero
+#' Computes score test statistics for testing whether each of a large number of
+#' coefficients (typically corresponding to genetic markers) in a GLM with canonical
+#' link is zero
 #' in presence of a smaller number of covariates (typically environmental
 #' covariates) not included in the test, and provides estimates of correlations
-#' beween the test statistics
+#' between the test statistics.
 #' @param formula Model \code{\link[stats]{formula}} for the null model, i.e.
 #'   including environmental covariates.
 #' @param xg Matrix of genetic markers (one column for each marker).
